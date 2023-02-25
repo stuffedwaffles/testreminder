@@ -21,7 +21,10 @@ windowWidth = 400
 folder = os.path.dirname(os.path.abspath(__file__))
 eventFilePath = os.path.join(folder, "events.json")
 
+#define apps and classes and whatnot idk how this works
 app = QApplication([])
+
+#the window that opens to input data
 class InputWindow(QWidget):
     def __init__(self):
         super().__init__()
@@ -32,6 +35,7 @@ class InputWindow(QWidget):
         self.dialogLayout = QVBoxLayout()
         layout = QFormLayout()
 
+        #set rows of lines for inputting things
         self.nameLine = QLineEdit()
         self.yearLine = QLineEdit()
         self.monthLine = QLineEdit()
@@ -49,6 +53,7 @@ class InputWindow(QWidget):
         layout.addRow("Event second: ", self.secondLine)
         self.dialogLayout.addLayout(layout)
 
+        #make a submit button and a place for a message if something is invalid
         submit = QPushButton("Submit Event!")
         submit.clicked.connect(self.onSubmit)
         self.invalid_label = QLabel()
@@ -59,6 +64,7 @@ class InputWindow(QWidget):
         self.setLayout(self.dialogLayout)
     
     def onSubmit(self):
+        #get all the data and assign it to vars, check if its valid and if not put a message
         global name
         name = str(self.nameLine.text())
         global year
@@ -94,6 +100,7 @@ class InputWindow(QWidget):
         else:
             datetime_list = [year, month, day, hour, minute, second, 0]
 
+        #open the events file and add the new event in
             with open(eventFilePath, 'r') as f:
                 events_dict = json.loads(f.read())
                 events_dict[name] = datetime_list
@@ -110,7 +117,7 @@ class InputWindow(QWidget):
         self.setLayout(self.dialogLayout)
 
 
-
+#main thing, just has a button to open the other window and input stuff
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
