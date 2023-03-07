@@ -21,12 +21,16 @@ folder = os.path.dirname(os.path.abspath(__file__))
 eventFilePath = os.path.join(folder, "events.json")
 
 #function to execute the reminding
-def remind(event, days=0, hours=0):
-    if days==0 and hours==0:
+def remind(event, mins, days=0,hours=0,seconds=0):
+    if seconds==0:
         message = " happening now!"
+    elif mins == 0:
+        message = f" happening in {days} day(s) and {hours} hour(s)!"
     else:
-        message = f" happening in {days} days and {hours} hours!"
-    
+        message = f" happening in {days} day(s) and {hours+1} hour(s)!"
+
+        
+
     notification.notify(
         title=event,
         message=f"REMINDER: {event}{message}",
@@ -64,25 +68,35 @@ while True:
         hours = tdelta.seconds//3600
         minutes = (tdelta.seconds//60)%60
         seconds = tdelta.seconds
+        tseconds = round(tdelta.total_seconds())
+        print(event, tseconds)
+        
 
         # print("tdelta", tdelta)
 
-        if seconds == 0:
-            remind(event,days,hours)
+        if tseconds == 0 or time == now:
+            remind(event, minutes)
             print("now")        
             current = event
-            break   
+            break
 
+        if tseconds<=0:
+            current = event
+            break
+            
 
-        elif (days<=7 and days>0) and hours==0 and minutes==0:
-            remind(event,days,hours)
+        elif (days<=7 and days>=0) and ((tseconds/3600)%24==0):
+            remind(event,time_list[4], days,0,tseconds)
             print("days")
-        elif days<1 and minutes==0 and (hours<=24 and hours>0):
-            remind(event,days,hours)
+
+        elif days<1 and (hours<=24 and hours>=0) and tseconds%3600==0:
+            remind(event,time_list[4], 0,hours,tseconds)
             print("hours")
         
-        t.sleep(.1)
-    
+        
+        
+        
+    t.sleep(1)
     #if the event happened and the variable was assigned a thing then remove it
     #otherwise chill and continue!
     try:
